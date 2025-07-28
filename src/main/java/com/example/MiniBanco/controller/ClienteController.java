@@ -11,7 +11,7 @@ import java.util.List;
 @RequestMapping("/clientes") //(tipo filtro) ele define o caminho url, qualquer requisição com /clientes ele vai cair nessa classe
 public class ClienteController {
 
-    @Autowired //ingeção de dependecia, nao precisa criar um objeto, ele vai criar objeto quando for necessario
+    @Autowired //injeção de dependencia, não precisa criar um objeto, ele vai criar objeto quando for necessario
     private ClienteRepository clienteRepository;
 
     @PostMapping // requisições http do tipo POST vai ficar nesse metodo, Post é criar ou modificar dados, ele altera os dados

@@ -1,5 +1,6 @@
 package com.example.MiniBanco.model;
 
+import com.example.MiniBanco.model.enums.TipoConta;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,5 +23,11 @@ public class ContaBancaria {
 
     private String agencia;
     private BigDecimal saldo;
+
+    @Enumerated(EnumType.STRING) //informar que esse atributo é um enum (informa que o tipo de enum é string, entao na tabela vai aparecer "corrente" ou "poupanca"
+    private TipoConta tipoConta;
+
+    @ManyToOne
+    @JoinColumn (name = "cliente_id")
     private Cliente cliente;
 }

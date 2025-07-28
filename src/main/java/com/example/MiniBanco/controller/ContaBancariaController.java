@@ -1,24 +1,21 @@
 package com.example.MiniBanco.controller;
 
 import com.example.MiniBanco.model.ContaBancaria;
-import com.example.MiniBanco.repository.ContaBancariaRepository;
+import com.example.MiniBanco.service.ContaBancariaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 
+//lida com a requisicioes http, vai se comunicar com a API
 @RestController
-@RequestMapping("/conta")
+@RequestMapping("/contas")
 public class ContaBancariaController {
 
     @Autowired
-    private ContaBancariaRepository contaBancariaRepository;
+    private ContaBancariaService contaBancariaService;
 
-    @PostMapping
-    public BigDecimal depositar(@RequestBody ContaBancaria saldo){
-        return contaBancariaRepository.save(saldo).getSaldo();
+    @PostMapping("/criar/{clienteId}")
+    public ContaBancaria criar(@PathVariable Long clienteId){
+        return contaBancariaService.criar(clienteId);
     }
 }

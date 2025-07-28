@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//modelo das informações que terao no sistema
+
 @Entity//anotação representa que essa classe vai virar uma tabela no BD
 @Data // vai gerar automaticamento get, set, to string, equals e hashcode
 @NoArgsConstructor //Cria construtor vazio
