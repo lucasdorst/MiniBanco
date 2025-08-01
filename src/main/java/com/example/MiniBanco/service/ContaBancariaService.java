@@ -7,11 +7,8 @@ import com.example.MiniBanco.model.ContaBancaria;
 import com.example.MiniBanco.model.enums.TipoConta;
 import com.example.MiniBanco.repository.ClienteRepository;
 import com.example.MiniBanco.repository.ContaBancariaRepository;
-import org.antlr.v4.runtime.misc.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -28,19 +25,13 @@ public class ContaBancariaService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-
     public ContaBancaria criar (Long clienteId) {
-        Optional<Cliente> cliente = clienteRepository.findById(clienteId);
-        //Optional vai fazer com que ele retorne um cliente existente, porem caso nao ache ele ao vai voltar null, pois causaria uma erro no programa
-        // nesse caso ele vai obrigar ao programador tratar esse dado, como feito embaixo com o if
-
-        if (cliente.isEmpty()) {
-            throw new RuntimeException("Cliente não encontrado");
-        }
+        Cliente cliente = clienteRepository.findById(clienteId).
+                orElseThrow(()-> new RuntimeException("Cliente não encontrado"));
 
         //vai criar um objeto contabancaria, assim definindo como deve ser ao criar uma nova
         ContaBancaria conta = new ContaBancaria();
-        conta.setCliente(cliente.get()); //o cliente dono da conta
+        conta.setCliente(cliente); //o cliente dono da conta
         conta.setSaldo(BigDecimal.ZERO); // o valor inicial da conta 00,00
         conta.setAgencia("0001");
         conta.setNumeroConta(gerarNumeroConta()); // vai gerar automaticamente o numero da conta com o metodo criado embaixo
@@ -57,6 +48,33 @@ public class ContaBancariaService {
         } while (contaBancariaRepository.existsByNumeroConta(numero));
 
         return numero;
+    }
+
+    public ContaBancaria depositar (Long contaId, BigDecimal valor){
+        ContaBancaria conta = contaBancariaRepository.findById(contaId)
+                .orElseThrow(()-> new RuntimeException("Conta não encontrada"));
+
+        if (valor.compareTo(BigDecimal.ZERO)<=0){
+            throw new RuntimeException("Valor do depósito deve ser positivo");
+        }
+        conta.setSaldo(conta.getSaldo().add(valor));
+        return contaBancariaRepository.save(conta);
+
+    }
+
+    public ContaBancaria sacar (Long contaId, BigDecimal valor){
+        ContaBancaria conta = contaBancariaRepository.findById(contaId)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+        if (conta.getSaldo().compareTo(valor)<0){
+            throw new RuntimeException("valor insuficiente para saque");
+        }
+        if (valor.compareTo(BigDecimal.ZERO)<=0){
+            throw new RuntimeException("Valor do depósito deve ser positivo");
+        }
+
+        conta.setSaldo(conta.getSaldo().subtract(valor));
+        return contaBancariaRepository.save(conta);
     }
 
 }

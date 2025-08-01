@@ -1,5 +1,6 @@
 package com.example.MiniBanco.controller;
 
+import com.example.MiniBanco.dto.TransacaoDTO;
 import com.example.MiniBanco.model.ContaBancaria;
 import com.example.MiniBanco.service.ContaBancariaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,13 @@ public class ContaBancariaController {
 
     @PostMapping("/criar/{clienteId}")
     public ContaBancaria criar(@PathVariable Long clienteId){
-        return contaBancariaService.criar(clienteId);
+        //@PathVariable inidica que o valor vai vir no URL
+        return contaBancariaService.criar(clienteId); //chama o serviço para criar a conta
+    }
+
+    @PostMapping("/{contaId}/depositar")
+    public ContaBancaria depositar(@PathVariable Long contaId, @RequestBody TransacaoDTO transacao){
+        //@RequestBody significa que o valor vai vir no corpo da requisição (em json)
+        return contaBancariaService.depositar(contaId,transacao.getValor());
     }
 }
