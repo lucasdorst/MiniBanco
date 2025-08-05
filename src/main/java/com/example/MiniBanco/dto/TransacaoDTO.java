@@ -9,4 +9,6 @@ import java.math.BigDecimal;
 @Data //vai gerara automaticamente get, set, toString...
 public class TransacaoDTO {
     private BigDecimal valor;
+    private Long origemId;
+    private Long destinoId;
 }

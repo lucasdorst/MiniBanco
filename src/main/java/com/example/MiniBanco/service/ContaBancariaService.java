@@ -54,7 +54,7 @@ public class ContaBancariaService {
         ContaBancaria conta = contaBancariaRepository.findById(contaId)
                 .orElseThrow(()-> new RuntimeException("Conta não encontrada"));
 
-        if (valor.compareTo(BigDecimal.ZERO)<=0){
+        if (valor == null || valor.compareTo(BigDecimal.ZERO)<=0){
             throw new RuntimeException("Valor do depósito deve ser positivo");
         }
         conta.setSaldo(conta.getSaldo().add(valor));
@@ -66,7 +66,7 @@ public class ContaBancariaService {
         ContaBancaria conta = contaBancariaRepository.findById(contaId)
                 .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
 
-        if (conta.getSaldo().compareTo(valor)<0){
+        if (conta.getSaldo().compareTo(valor)<=0){
             throw new RuntimeException("valor insuficiente para saque");
         }
         if (valor.compareTo(BigDecimal.ZERO)<=0){
@@ -77,4 +77,27 @@ public class ContaBancariaService {
         return contaBancariaRepository.save(conta);
     }
 
+    public BigDecimal transferencia(Long origemId, Long destinoId, BigDecimal valor){
+        ContaBancaria contaOrigem = contaBancariaRepository.findById(origemId)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+        ContaBancaria contaDestino = contaBancariaRepository.findById(destinoId)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+        if (contaOrigem.getSaldo().compareTo(valor)<0){
+            throw new RuntimeException("Saldo insuficiente");
+        }
+
+        if (valor.compareTo(BigDecimal.ZERO)<=0){
+            throw new RuntimeException("Valor do depósito deve ser positivo");
+        }
+
+        contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(valor));
+        contaDestino.setSaldo(contaDestino.getSaldo().add(valor));
+
+        contaBancariaRepository.save(contaOrigem);
+        contaBancariaRepository.save(contaDestino);
+
+        return contaOrigem.getSaldo();
+    }
 }
