@@ -2,12 +2,15 @@ package com.example.MiniBanco.controller;
 
 import com.example.MiniBanco.dto.TransacaoDTO;
 import com.example.MiniBanco.model.ContaBancaria;
+import com.example.MiniBanco.model.Transacao;
 import com.example.MiniBanco.repository.ContaBancariaRepository;
+import com.example.MiniBanco.repository.TransacaoRepository;
 import com.example.MiniBanco.service.ContaBancariaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 //lida com a requisicioes http, vai se comunicar com a API
@@ -17,7 +20,10 @@ public class ContaBancariaController {
 
     @Autowired
     private ContaBancariaService contaBancariaService;
-    private TransacaoDTO dto;
+
+    @Autowired
+    private TransacaoRepository transacaoRepository;
+
 
     @PostMapping("/criar/{clienteId}")
     public ContaBancaria criar(@PathVariable Long clienteId){
@@ -40,5 +46,10 @@ public class ContaBancariaController {
     public String transferencia(@RequestBody TransacaoDTO dto){
         contaBancariaService.transferencia(dto.getOrigemId(), dto.getDestinoId(), dto.getValor());
         return ("Transferência realizada com sucesso");
+    }
+
+    @GetMapping("/registro/{contaId}")
+    public List<Transacao> registroTransacao(@PathVariable Long contaId){
+        return transacaoRepository.findByContaId(contaId);
     }
 }

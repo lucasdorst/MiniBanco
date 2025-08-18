@@ -27,6 +27,8 @@ public class ContaBancaria {
     @Enumerated(EnumType.STRING) //informar que esse atributo é um enum (informa que o tipo de enum é string, entao na tabela vai aparecer "corrente" ou "poupanca"
     private TipoConta tipoConta;
 
+    private BigDecimal historicoTransacao;
+
     @ManyToOne
     @JoinColumn (name = "cliente_id")
     private Cliente cliente;

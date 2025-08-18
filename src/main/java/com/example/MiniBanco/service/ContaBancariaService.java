@@ -4,9 +4,11 @@ package com.example.MiniBanco.service;
 
 import com.example.MiniBanco.model.Cliente;
 import com.example.MiniBanco.model.ContaBancaria;
+import com.example.MiniBanco.model.Transacao;
 import com.example.MiniBanco.model.enums.TipoConta;
 import com.example.MiniBanco.repository.ClienteRepository;
 import com.example.MiniBanco.repository.ContaBancariaRepository;
+import com.example.MiniBanco.repository.TransacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,9 @@ public class ContaBancariaService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    @Autowired
+    private TransacaoRepository transacaoRepository;
 
     public ContaBancaria criar (Long clienteId) {
         Cliente cliente = clienteRepository.findById(clienteId).
@@ -58,6 +63,8 @@ public class ContaBancariaService {
             throw new RuntimeException("Valor do depósito deve ser positivo");
         }
         conta.setSaldo(conta.getSaldo().add(valor));
+
+        registrarTransacao(conta, valor, "Depositar", "Deposito com sucesso");
         return contaBancariaRepository.save(conta);
 
     }
@@ -74,6 +81,7 @@ public class ContaBancariaService {
         }
 
         conta.setSaldo(conta.getSaldo().subtract(valor));
+        registrarTransacao(conta, valor, "saque", "Saque com sucesso");
         return contaBancariaRepository.save(conta);
     }
 
@@ -93,11 +101,19 @@ public class ContaBancariaService {
         }
 
         contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(valor));
+        registrarTransacao(contaOrigem,valor, "Transferido", "Transferido com sucesso");
+
         contaDestino.setSaldo(contaDestino.getSaldo().add(valor));
+        registrarTransacao(contaDestino, valor, "Recebido", "Recebido com sucesso");
 
         contaBancariaRepository.save(contaOrigem);
         contaBancariaRepository.save(contaDestino);
 
         return contaOrigem.getSaldo();
+    }
+
+    public void registrarTransacao (ContaBancaria conta, BigDecimal valor, String tipo, String descricao){
+        Transacao transacao = new Transacao(conta, valor, tipo, descricao);
+        transacaoRepository.save(transacao);
     }
 }
